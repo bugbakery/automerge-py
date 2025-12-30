@@ -59,7 +59,7 @@ data = automerge.save(doc)
 
 load_options = automerge.LoadOptions()
 load_options.on_partial_load = automerge.OnPartialLoad.Ignore
-doc2 = automerge.load(data)
+doc2 = automerge.load_with_options(data, load_options)
 
 with automerge.transaction(doc) as d:
     d.hello.hello[4:] = [1,3,4]
