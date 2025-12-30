@@ -976,6 +976,88 @@ pub fn load(py: Python<'_>, bytes: &PyBytes) -> PyResult<PyObject> {
 }
 
 #[pyclass]
+#[derive(PartialEq, Clone, Default)]
+enum OnPartialLoad {
+    Ignore,
+    #[default]
+    Error
+}
+
+#[pymethods]
+impl OnPartialLoad {
+    #[new]
+    fn new() -> Self {
+        Self::default()
+    }
+}
+
+
+impl Into<automerge::OnPartialLoad> for OnPartialLoad {
+    fn into(self) -> automerge::OnPartialLoad {
+        match self {
+            Self::Ignore => automerge::OnPartialLoad::Ignore,
+            Self::Error => automerge::OnPartialLoad::Error,
+        }
+    }
+}
+
+#[pyclass]
+#[derive(PartialEq, Clone, Default)]
+enum VerificationMode {
+    #[default]
+    Check,
+    DontCheck
+}
+
+#[pymethods]
+impl VerificationMode {
+    #[new]
+    fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl Into<automerge::VerificationMode> for VerificationMode {
+    fn into(self) -> automerge::VerificationMode {
+        match self {
+            Self::Check => automerge::VerificationMode::Check,
+            Self::DontCheck => automerge::VerificationMode::DontCheck,
+        }
+    }
+}
+
+#[pyclass]
+#[derive(Clone, Default)]
+struct LoadOptions {
+    #[pyo3(get, set)]
+    on_partial_load: OnPartialLoad,
+    #[pyo3(get, set)]
+    verification_mode: VerificationMode
+}
+
+#[pymethods]
+impl LoadOptions {
+    #[new]
+    fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl Into<automerge::LoadOptions<'static>> for LoadOptions {
+    fn into(self) -> automerge::LoadOptions<'static> {
+        automerge::LoadOptions::new()
+            .on_partial_load(self.on_partial_load.into())
+            .verification_mode(self.verification_mode.into())
+    }
+}
+
+#[pyfunction]
+pub fn load_with_options(py: Python<'_>, bytes: &PyBytes, options: LoadOptions) -> PyResult<PyObject> {
+    let new_doc = Automerge::load_with_options(bytes.as_bytes(), options.into()).map_err(AutomergeError::AutomergeError)?;
+    Document::from_doc(py, new_doc)
+}
+
+#[pyclass]
 #[derive(Clone)]
 pub struct Change {
     change: automerge::Change,
@@ -1092,6 +1174,9 @@ fn _backend(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Change>()?;
     m.add_class::<Text>()?;
     m.add_class::<Counter>()?;
+    m.add_class::<LoadOptions>()?;
+    m.add_class::<OnPartialLoad>()?;
+    m.add_class::<VerificationMode>()?;
     m.add_function(wrap_pyfunction!(transaction, m)?)?;
     m.add_function(wrap_pyfunction!(entries, m)?)?;
     m.add_function(wrap_pyfunction!(init, m)?)?;

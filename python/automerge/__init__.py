@@ -17,6 +17,9 @@ from ._backend import (
     get_last_local_change,
     Counter,
     Text,
+    LoadOptions,
+    OnPartialLoad,
+    VerificationMode
 )
 
 __all__ = [
@@ -35,6 +38,9 @@ __all__ = [
     "get_last_local_change",
     "Counter",
     "Text",
+    "LoadOptions",
+    "OnPartialLoad",
+    "VerificationMode"
 ]
 
 

@@ -57,6 +57,8 @@ dd(doc)
 
 data = automerge.save(doc)
 
+load_options = automerge.LoadOptions()
+load_options.on_partial_load = automerge.OnPartialLoad.Ignore
 doc2 = automerge.load(data)
 
 with automerge.transaction(doc) as d:

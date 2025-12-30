@@ -1,21 +1,23 @@
-[tool.poetry]
+[project]
 name = "automerge"
 version = "0.0.1"
 description = "A python wrapper around the Automerge rust implementation"
-authors = ["Alex Good <alex@memoryandthought.me>"]
+authors = [
+    { name = "pajowu", email = "git@ca.pajowu.de" },
+    { name = "vup", email = "robin.ole.heinemann+transcribee@gmail.com" },
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.9"
 
-[tool.poetry.dev-dependencies]
-maturin = "^1.7.0"
-mypy = "^0.800"
-flake8 = "^3.8.4"
-ipython = "^7.20.0"
-nose = "^1.3.7"
+[tool.uv]
+dev-dependencies = [
+  "pytest>=1.7"
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "maturin>=1.7,<2.0"]
+requires = ["maturin>=1.7,<2.0"]
 build-backend = "maturin"
 
 [tool.maturin]
